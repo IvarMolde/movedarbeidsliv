@@ -32,38 +32,57 @@ const DragWordsTask = ({ task, onAnswer, feedback }) => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-3">
+    <div className="space-y-8">
+      {/* Word-Definition Pairs */}
+      <div className="space-y-4">
         {task.pairs.map((p, i) => (
           <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-            <div className="p-4 bg-indigo-950 rounded-xl border-2 border-indigo-950 font-black text-white text-center text-lg shadow-lg">
+            {/* Word */}
+            <div className="p-4 bg-gradient-to-r from-indigo-900 to-blue-900 rounded-2xl border-2 border-indigo-950 font-black text-white text-center text-lg shadow-lg">
               {p.word}
             </div>
-            <div className={`p-4 rounded-xl border-4 border-dashed min-h-[60px] flex items-center justify-center transition-all ${dragSelections[i] ? 'border-indigo-700 bg-white shadow-xl ring-2 ring-indigo-50' : 'border-slate-300 bg-slate-50'}`}>
+            
+            {/* Drop Zone */}
+            <div className={`p-5 rounded-2xl border-4 border-dashed min-h-16 flex items-center justify-center transition-all cursor-pointer ${
+              dragSelections[i] 
+                ? 'border-emerald-400 bg-emerald-50 shadow-lg ring-2 ring-emerald-200' 
+                : 'border-slate-300 bg-slate-50 hover:border-indigo-400 hover:bg-indigo-50'
+            }`}>
               {dragSelections[i] ? (
-                <button onClick={() => handleDragSelection(i, null)} className="text-slate-900 font-black text-base flex items-center justify-between w-full">
-                  {dragSelections[i]} <RefreshCcw size={16} className="text-indigo-600"/>
+                <button 
+                  onClick={() => handleDragSelection(i, null)}
+                  className="text-slate-900 font-black text-base flex items-center justify-between w-full gap-3 px-2"
+                >
+                  <span className="text-emerald-700">{dragSelections[i]}</span>
+                  <RefreshCcw size={18} className="text-emerald-600"/>
                 </button>
               ) : (
-                <span className="text-slate-500 font-black italic text-sm">Velg riktig svar...</span>
+                <span className="text-slate-500 font-bold italic text-sm">Velg svar...</span>
               )}
             </div>
           </div>
         ))}
       </div>
-      <div className="p-6 bg-slate-200 rounded-[1.5rem] border-2 border-slate-300 shadow-inner text-center">
-        <p className="text-[10px] font-black text-slate-700 uppercase mb-4 tracking-widest">Tilgjengelige svar:</p>
-        <div className="flex flex-wrap gap-2 justify-center">
+
+      {/* Available Definitions */}
+      <div className="bg-gradient-to-br from-slate-100 to-slate-50 p-6 rounded-2xl border-2 border-slate-300 shadow-inner">
+        <p className="text-xs font-black text-slate-700 uppercase mb-4 tracking-widest text-center">Tilgjengelige definisjoner:</p>
+        <div className="flex flex-wrap gap-3 justify-center">
           {shuffledDefs.map((def, i) => {
             const isUsed = Object.values(dragSelections).includes(def);
             return (
               <button 
-                key={i} disabled={isUsed || feedback}
+                key={i}
+                disabled={isUsed || feedback}
                 onClick={() => {
                   const nextEmpty = task.pairs.findIndex((_, idx) => !dragSelections[idx]);
                   if (nextEmpty !== -1) handleDragSelection(nextEmpty, def);
                 }}
-                className={`px-4 py-2 rounded-xl font-black text-base transition-all border-2 shadow-md ${isUsed ? 'bg-slate-300 border-slate-300 text-slate-600 opacity-40' : 'bg-white border-slate-400 text-slate-900 hover:border-indigo-700 hover:text-indigo-800 active:scale-95'}`}
+                className={`px-4 py-2 rounded-xl font-black text-base transition-all border-2 shadow-md active:scale-90 ${
+                  isUsed 
+                    ? 'bg-slate-300 border-slate-300 text-slate-600 opacity-50 cursor-not-allowed' 
+                    : 'bg-white border-slate-400 text-slate-900 hover:border-indigo-500 hover:bg-indigo-50 hover:shadow-lg cursor-pointer'
+                }`}
               >
                 {def}
               </button>
@@ -71,7 +90,17 @@ const DragWordsTask = ({ task, onAnswer, feedback }) => {
           })}
         </div>
       </div>
-      <button onClick={checkDragWords} disabled={feedback} className="w-full py-5 bg-indigo-800 text-white rounded-[1.5rem] font-black text-xl shadow-2xl transition-all active:scale-95">Sjekk koblinger</button>
+
+      {/* Check Button */}
+      <div className="flex justify-center pt-2">
+        <button 
+          onClick={checkDragWords}
+          disabled={feedback}
+          className="w-full sm:w-auto px-12 py-6 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-black text-xl hover:from-indigo-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all active:scale-95 focus:outline-none focus:ring-4 focus:ring-indigo-300 disabled:opacity-50 uppercase tracking-wider"
+        >
+          Sjekk koblinger
+        </button>
+      </div>
     </div>
   );
 };
@@ -90,20 +119,46 @@ const SortWordsTask = ({ task, onAnswer, feedback }) => {
 
   return (
     <div className="space-y-6">
-      <div className="min-h-[80px] p-6 bg-indigo-50 rounded-[1.5rem] border-2 border-dashed border-indigo-400 flex flex-wrap gap-2 items-center justify-center shadow-inner">
-        {currentSort.map((w, i) => <span key={i} className="px-4 py-2 bg-white rounded-xl shadow-md font-black text-indigo-900 text-lg animate-in zoom-in border-2 border-indigo-100">{w}</span>)}
-        {currentSort.length === 0 && <span className="text-indigo-600 font-bold italic text-base">Trykk på ordene under...</span>}
+      {/* Current Sentence */}
+      <div className="min-h-24 p-6 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl border-3 border-dashed border-indigo-300 flex flex-wrap gap-3 items-center justify-center shadow-inner">
+        {currentSort.map((w, i) => (
+          <span key={i} className="px-4 py-2 bg-white rounded-xl shadow-md font-black text-indigo-900 text-lg border-2 border-indigo-100 animate-in zoom-in">
+            {w}
+          </span>
+        ))}
+        {currentSort.length === 0 && (
+          <span className="text-indigo-500 font-bold italic text-lg">Klikk på ordene under i rekkefølge...</span>
+        )}
       </div>
+
+      {/* Available Words */}
       <div className="flex flex-wrap gap-3 justify-center">
         {task.shuffled.filter(w => {
           const countInSentence = task.shuffled.filter(x => x === w).length;
           const countInCurrent = currentSort.filter(x => x === w).length;
           return countInCurrent < countInSentence;
         }).map((w, i) => (
-          <button key={i} disabled={feedback} onClick={() => handleWordClick(w)} className="px-6 py-3 bg-white border-2 border-slate-400 rounded-xl font-black text-lg text-slate-900 hover:border-indigo-700 hover:bg-indigo-50 transition-all active:scale-90 shadow-md">{w}</button>
+          <button 
+            key={i} 
+            disabled={feedback}
+            onClick={() => handleWordClick(w)}
+            className="px-6 py-3 bg-white border-2 border-slate-300 rounded-xl font-black text-lg text-slate-900 hover:border-indigo-500 hover:bg-indigo-50 hover:shadow-lg transition-all active:scale-90 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {w}
+          </button>
         ))}
       </div>
-      <button onClick={() => setCurrentSort([])} disabled={feedback} className="flex items-center gap-2 text-slate-700 font-black text-xs uppercase tracking-widest mx-auto hover:text-indigo-800 bg-slate-200 px-4 py-1.5 rounded-full active:scale-95"><RefreshCcw size={14}/> Start på nytt</button>
+
+      {/* Reset Button */}
+      <div className="flex justify-center pt-2">
+        <button 
+          onClick={() => setCurrentSort([])} 
+          disabled={feedback}
+          className="flex items-center gap-2 text-slate-600 font-black text-sm uppercase tracking-widest hover:text-indigo-700 bg-slate-100 hover:bg-slate-200 px-6 py-2 rounded-full active:scale-95 disabled:opacity-50 transition-all"
+        >
+          <RefreshCcw size={16}/> Start på nytt
+        </button>
+      </div>
     </div>
   );
 };
@@ -121,17 +176,67 @@ const SortParagraphsTask = ({ task, onAnswer, feedback }) => {
   };
 
   return (
-    <div className="space-y-4">
-      {paraSort.map((p, i) => (
-        <div key={i} className={`flex items-center gap-4 p-5 rounded-[1.5rem] shadow-md border-2 transition-colors ${feedback ? 'bg-emerald-950 border-emerald-900 text-white' : 'bg-white border-slate-300'}`}>
-          <div className="flex flex-col gap-2">
-            <button onClick={() => movePara(i, -1)} disabled={feedback} className="p-2 bg-slate-200 hover:bg-indigo-200 rounded-lg transition-colors"><ChevronLeft className="rotate-90 text-slate-900" size={18}/></button>
-            <button onClick={() => movePara(i, 1)} disabled={feedback} className="p-2 bg-slate-200 hover:bg-indigo-200 rounded-lg transition-colors"><ChevronLeft className="-rotate-90 text-slate-900" size={18}/></button>
+    <div className="space-y-6">
+      {/* Paragraph cards with position numbers */}
+      <div className="space-y-4">
+        {paraSort.map((p, i) => (
+          <div 
+            key={i}
+            className={`flex items-center gap-4 p-6 rounded-2xl shadow-md border-2 transition-all group ${
+              feedback 
+                ? 'bg-gradient-to-r from-emerald-50 to-emerald-100 border-emerald-400' 
+                : 'bg-white border-slate-200 hover:border-indigo-400 hover:shadow-lg'
+            }`}
+          >
+            {/* Position number */}
+            <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg ${
+              feedback
+                ? 'bg-emerald-500 text-white'
+                : 'bg-slate-200 text-slate-700 group-hover:bg-indigo-200'
+            }`}>
+              {i + 1}
+            </div>
+
+            {/* Up/Down buttons */}
+            <div className="flex flex-col gap-2 flex-shrink-0">
+              <button 
+                onClick={() => movePara(i, -1)}
+                disabled={feedback}
+                className="p-2 bg-slate-100 hover:bg-indigo-200 hover:text-indigo-900 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="rotate-90" size={18}/>
+              </button>
+              <button 
+                onClick={() => movePara(i, 1)}
+                disabled={feedback}
+                className="p-2 bg-slate-100 hover:bg-indigo-200 hover:text-indigo-900 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="-rotate-90" size={18}/>
+              </button>
+            </div>
+
+            {/* Paragraph Text */}
+            <p className={`text-lg font-semibold leading-relaxed flex-grow ${
+              feedback 
+                ? 'text-emerald-900' 
+                : 'text-slate-800'
+            }`}>
+              {p}
+            </p>
           </div>
-          <p className="text-base font-bold leading-relaxed flex-grow text-slate-900">{p}</p>
-        </div>
-      ))}
-      <button onClick={() => onAnswer(JSON.stringify(paraSort) === JSON.stringify(task.paragraphs))} disabled={feedback} className="w-full py-5 bg-indigo-800 text-white rounded-[1.5rem] font-black text-xl mt-6 shadow-2xl active:scale-95 transition-all">Bekreft rekkefølge</button>
+        ))}
+      </div>
+
+      {/* Confirm Button */}
+      <div className="flex justify-center pt-4">
+        <button 
+          onClick={() => onAnswer(JSON.stringify(paraSort) === JSON.stringify(task.paragraphs))}
+          disabled={feedback}
+          className="w-full sm:w-auto px-12 py-6 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-black text-xl hover:from-indigo-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all active:scale-95 focus:outline-none focus:ring-4 focus:ring-indigo-300 disabled:opacity-50 uppercase tracking-wider"
+        >
+          Bekreft rekkefølge
+        </button>
+      </div>
     </div>
   );
 };
@@ -462,59 +567,93 @@ const TaskRenderer = ({ task, onAnswer, userInput, setUserInput, feedback }) => 
   switch (task.type) {
     case 'choice':
       return (
-        <div className="grid grid-cols-1 gap-3">
+        <div className="space-y-4">
           {task.options.map((opt, i) => {
             const isCorrect = i === task.correct;
-            let statusStyle = "border-slate-300 bg-white text-slate-800 hover:border-indigo-600 hover:bg-indigo-50";
+            let styleClasses = "border-slate-300 bg-white text-slate-800 hover:border-indigo-500 hover:bg-indigo-50 hover:shadow-lg";
             if (feedback) {
-              if (isCorrect) statusStyle = "border-emerald-800 bg-emerald-900 text-white font-black shadow-lg ring-4 ring-emerald-100 scale-[1.02]";
-              else statusStyle = "border-slate-200 bg-white text-slate-400 opacity-40";
+              if (isCorrect) styleClasses = "border-emerald-600 bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-900 font-black shadow-lg ring-2 ring-emerald-200 scale-[1.01]";
+              else styleClasses = "border-slate-200 bg-slate-50 text-slate-400 opacity-50";
             }
             return (
               <button 
-                key={i} disabled={!!feedback}
+                key={i} 
+                disabled={!!feedback}
                 onClick={() => onAnswer(isCorrect)}
-                className={`w-full p-4 text-left border-2 rounded-2xl transition-all font-bold text-lg flex justify-between items-center group active:scale-95 ${statusStyle}`}
+                className={`w-full p-5 text-left border-2 rounded-2xl transition-all font-bold text-lg flex justify-between items-center group active:scale-95 ${styleClasses}`}
               >
-                {opt} 
-                <ChevronRight className={feedback && isCorrect ? "text-emerald-200" : "text-slate-400"} size={20} />
+                <span className="flex-1">{opt}</span>
+                {feedback && isCorrect && <CheckCircle2 size={24} className="text-emerald-600 ml-4" />}
+                {!feedback && <ChevronRight className="text-slate-400 group-hover:text-indigo-600 ml-4" size={20} />}
               </button>
             );
           })}
         </div>
       );
+    
     case 'tf':
       return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-          <button disabled={!!feedback} onClick={() => onAnswer(task.answer === true)} className={`p-8 border-4 rounded-[2rem] font-black text-2xl transition-all shadow-sm ${feedback && task.answer === true ? 'bg-emerald-900 border-emerald-950 text-white shadow-emerald-200' : 'bg-emerald-50 border-emerald-300 text-emerald-900 hover:bg-emerald-100'}`}>RETT</button>
-          <button disabled={!!feedback} onClick={() => onAnswer(task.answer === false)} className={`p-8 border-4 rounded-[2rem] font-black text-2xl transition-all shadow-sm ${feedback && task.answer === false ? 'bg-emerald-900 border-emerald-950 text-white shadow-emerald-200' : 'bg-red-50 border-red-300 text-red-900 hover:bg-red-100'}`}>GALT</button>
+        <div className="grid grid-cols-2 gap-4 pt-4">
+          <button 
+            disabled={!!feedback} 
+            onClick={() => onAnswer(task.answer === true)}
+            className={`p-8 border-3 rounded-2xl font-black text-2xl transition-all focus:outline-none focus:ring-4 focus:ring-emerald-300 ${feedback && task.answer === true ? 'bg-emerald-600 border-emerald-700 text-white shadow-lg scale-105' : 'bg-emerald-50 border-emerald-300 text-emerald-900 hover:bg-emerald-100'}`}
+          >
+            RETT
+          </button>
+          <button 
+            disabled={!!feedback}
+            onClick={() => onAnswer(task.answer === false)}
+            className={`p-8 border-3 rounded-2xl font-black text-2xl transition-all focus:outline-none focus:ring-4 focus:ring-red-300 ${feedback && task.answer === false ? 'bg-red-600 border-red-700 text-white shadow-lg scale-105' : 'bg-red-50 border-red-300 text-red-900 hover:bg-red-100'}`}
+          >
+            GALT
+          </button>
         </div>
       );
+    
     case 'blank':
       return (
         <div className="space-y-6">
-          <div className="p-8 bg-slate-100 rounded-[1.5rem] border-2 border-slate-300 text-center font-bold text-slate-900 italic text-xl leading-relaxed">
-            "{task.text.replace('[blank]', '_______')}"
+          <div className="p-8 bg-slate-100 rounded-2xl border-2 border-slate-300 text-center font-bold text-slate-900 text-lg leading-relaxed italic">
+            "{task.text.replace('[blank]', '___________')}"
           </div>
-          <div className="flex flex-col gap-4 ">
+          <div className="flex flex-col gap-4">
             <input 
-              autoFocus type="text" value={userInput}
+              autoFocus 
+              type="text" 
+              value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && onAnswer(userInput.toLowerCase().trim() === task.answer.toLowerCase())}
-              className={`w-full p-4 border-4 rounded-2xl outline-none text-2xl font-black text-center uppercase shadow-inner transition-colors ${feedback ? 'bg-emerald-900 text-white border-emerald-950' : 'bg-white border-slate-300 focus:border-indigo-700 text-indigo-950'}`}
+              disabled={!!feedback}
+              className={`w-full p-5 border-3 rounded-2xl outline-none text-2xl font-black text-center uppercase shadow-md transition-all focus:ring-4 ${feedback ? 'bg-emerald-100 text-emerald-900 border-emerald-400 focus:ring-emerald-300' : 'bg-white border-slate-300 focus:border-indigo-600 text-indigo-900 focus:ring-indigo-300'}`}
               placeholder="Skriv her..."
             />
-            <button onClick={() => onAnswer(userInput.toLowerCase().trim() === task.answer.toLowerCase())} className="w-full py-4 bg-indigo-800 text-white rounded-[1.5rem] font-black text-xl hover:bg-indigo-900 shadow-xl transition-all active:scale-95">SJEKK SVAR</button>
+            <button 
+              onClick={() => onAnswer(userInput.toLowerCase().trim() === task.answer.toLowerCase())}
+              disabled={!!feedback}
+              className="w-full py-5 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-black text-xl hover:from-indigo-700 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all active:scale-95 focus:outline-none focus:ring-4 focus:ring-indigo-300 uppercase tracking-wider disabled:opacity-50"
+            >
+              SJEKK SVAR
+            </button>
           </div>
         </div>
       );
+    
     case 'sort-words':
       return <SortWordsTask task={task} onAnswer={onAnswer} feedback={feedback} />;
+    
     case 'sort-paragraphs':
       return <SortParagraphsTask task={task} onAnswer={onAnswer} feedback={feedback} />;
+    
     case 'drag-words':
       return <DragWordsTask task={task} onAnswer={onAnswer} feedback={feedback} />;
-    default: return <div className="p-4 bg-red-100 text-red-900 rounded-xl font-bold text-sm">Feil: Ukjent oppgavetype</div>;
+    
+    default: 
+      return (
+        <div className="p-6 bg-gradient-to-r from-red-100 to-red-50 text-red-900 rounded-2xl font-bold text-base border-2 border-red-300">
+          ⚠️ Feil: Ukjent oppgavetype
+        </div>
+      );
   }
 };
 
@@ -569,22 +708,73 @@ export default function App() {
 
   if (!level) {
     return (
-      <div className="min-h-screen bg-[#f1f5f9] flex flex-col items-center justify-center p-6 text-center font-sans">
-        <div className="max-w-2xl w-full space-y-10">
-          <div className="space-y-4">
-            <div className="bg-indigo-800 w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto shadow-2xl rotate-3 animate-bounce"><Trophy size={40} className="text-white" /></div>
-            <h1 className="text-5xl font-black text-slate-900 tracking-tighter uppercase">Arbeidslivs Portalen</h1>
-            <p className="text-slate-700 font-bold text-xl max-w-xl mx-auto leading-tight">Interaktiv trening på norsk arbeidsliv.</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col items-center justify-center px-4 py-8 sm:py-16 font-sans overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        </div>
+        
+        <div className="relative z-10 w-full max-w-3xl flex flex-col items-center justify-center space-y-12 sm:space-y-16">
+          {/* Header */}
+          <div className="text-center space-y-6 w-full">
+            <div className="inline-flex items-center justify-center">
+              <div className="bg-gradient-to-br from-indigo-600 to-blue-600 w-24 h-24 rounded-3xl flex items-center justify-center shadow-2xl transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+                <Trophy size={48} className="text-white" />
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <h1 className="text-6xl sm:text-7xl font-black bg-gradient-to-r from-indigo-900 via-blue-900 to-slate-900 bg-clip-text text-transparent tracking-tight">
+                Arbeidslivs Portalen
+              </h1>
+              <p className="text-lg sm:text-xl text-slate-600 font-semibold max-w-xl mx-auto leading-relaxed">
+                Mestring av norsk arbeidsliv gjennom interaktiv trening
+              </p>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {['A2', 'B1'].map(l => (
-              <button key={l} onClick={() => setLevel(l)} className="bg-white p-10 rounded-[3rem] border-b-[10px] border-slate-300 hover:border-indigo-700 hover:-translate-y-2 transition-all group shadow-xl active:translate-y-0 active:border-b-0">
-                <div className={`w-16 h-16 ${l === 'A2' ? 'bg-blue-100 text-blue-900' : 'bg-emerald-100 text-emerald-900'} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-inner`}>
-                  <span className="text-3xl font-black">{l}</span>
+
+          {/* CTA Text */}
+          <div className="text-center">
+            <p className="text-sm font-black text-indigo-600 uppercase tracking-widest letter-spacing-2">Velg ditt nivå</p>
+          </div>
+
+          {/* Level Selection */}
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
+            {['A2', 'B1'].map((l, idx) => (
+              <button 
+                key={l} 
+                onClick={() => setLevel(l)} 
+                className="group relative h-64 sm:h-72 rounded-3xl overflow-hidden cursor-pointer focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 hover:-translate-y-1 active:translate-y-0"
+              >
+                {/* Card Background */}
+                <div className={`absolute inset-0 ${l === 'A2' ? 'bg-gradient-to-br from-blue-500 to-blue-600' : 'bg-gradient-to-br from-emerald-500 to-emerald-600'}`}></div>
+                
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+                
+                {/* Content */}
+                <div className="relative h-full flex flex-col items-center justify-center space-y-4 p-8">
+                  <div className={`w-20 h-20 ${l === 'A2' ? 'bg-blue-400/30 border-blue-300' : 'bg-emerald-400/30 border-emerald-300'} rounded-2xl flex items-center justify-center border-2 backdrop-blur-sm group-hover:scale-110 transition-transform duration-300`}>
+                    <span className="text-4xl font-black text-white">{l}</span>
+                  </div>
+                  
+                  <div className="space-y-2 text-center">
+                    <h3 className="text-3xl font-black text-white">Nivå {l}</h3>
+                    <p className={`text-sm font-semibold ${l === 'A2' ? 'text-blue-100' : 'text-emerald-100'}`}>
+                      {l === 'A2' ? 'Grunnleggende arbeidsliv' : 'Avansert arbeidsliv'}
+                    </p>
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/30 group-hover:h-2 transition-all duration-300"></div>
                 </div>
-                <h3 className="text-2xl font-black text-slate-900 uppercase">Nivå {l}</h3>
               </button>
             ))}
+          </div>
+
+          {/* Footer hint */}
+          <div className="text-center">
+            <p className="text-sm text-slate-500 font-medium">Klikk for å starte</p>
           </div>
         </div>
       </div>
@@ -595,45 +785,82 @@ export default function App() {
     const themes = level === 'A2' ? coursesA2 : coursesB1;
     const completedCount = themes.filter(t => history[`${level}-${t.id}`]?.completed).length;
     return (
-      <div className="min-h-screen bg-[#f1f5f9] p-6 md:p-8 flex flex-col items-center font-sans">
-        <div className="max-w-6xl w-full space-y-8">
-          <header className="bg-white rounded-[2.5rem] p-8 shadow-xl border-2 border-slate-200 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="space-y-4 text-center md:text-left">
-              <button onClick={() => setLevel(null)} className="flex items-center gap-2 text-indigo-800 font-black text-sm uppercase tracking-widest hover:underline active:scale-95 transition-transform"><ChevronLeft size={20}/> Bytt nivå</button>
-              <h1 className="text-4xl font-black text-slate-900 tracking-tight uppercase">Dashbord <span className="text-indigo-800">{level}</span></h1>
-              <p className="text-slate-700 font-black text-base">Velg et tema for å starte.</p>
-            </div>
-            <div className="flex gap-6 items-center bg-indigo-50 p-6 rounded-[2rem] border-2 border-indigo-200 shadow-inner">
-               <div className="text-right">
-                  <p className="text-xs font-black text-indigo-600 uppercase tracking-[0.2em] mb-1">Gjennomført</p>
-                  <p className="text-4xl font-black text-indigo-900">{Math.round((completedCount/themes.length)*100)}%</p>
-               </div>
-               <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-indigo-100"><Trophy className="text-yellow-500" size={32} /></div>
-            </div>
-          </header>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-blue-50 p-4 sm:p-8 flex flex-col items-center font-sans">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <div className="relative z-10 w-full max-w-7xl mx-auto">
+          {/* Header Card */}
+          <div className="mb-12">
+            <div className="bg-white/80 backdrop-blur-lg rounded-3xl p-8 sm:p-12 shadow-lg border border-white/20 flex flex-col sm:flex-row justify-between items-center gap-8">
+              <div className="flex-1 text-center sm:text-left">
+                <button onClick={() => setLevel(null)} className="inline-flex items-center gap-2 text-indigo-600 font-bold text-sm uppercase tracking-widest hover:text-indigo-700 active:scale-95 transition-all mb-4">
+                  <ChevronLeft size={18}/> Tilbake
+                </button>
+                <h1 className="text-5xl sm:text-6xl font-black bg-gradient-to-r from-indigo-900 to-blue-900 bg-clip-text text-transparent mb-3">
+                  Nivå {level}
+                </h1>
+                <p className="text-lg text-slate-600 font-semibold">Velg et tema og begynn å lære</p>
+              </div>
+              
+              <div className="flex flex-col items-center gap-4 bg-gradient-to-br from-indigo-50 to-blue-50 p-8 rounded-2xl border border-indigo-100">
+                <div className="text-center">
+                  <p className="text-sm font-black text-indigo-600 uppercase tracking-wider mb-2">Fremdrift</p>
+                  <div className="text-5xl font-black text-indigo-900">{Math.round((completedCount/themes.length)*100)}%</div>
+                </div>
+                <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                  <div className="bg-gradient-to-r from-indigo-600 to-blue-600 h-full transition-all duration-500" style={{ width: `${Math.round((completedCount/themes.length)*100)}%` }}></div>
+                </div>
+                <p className="text-xs text-slate-600 font-semibold">{completedCount} av {themes.length} ferdig</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Themes Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {themes.map(t => {
               const stats = history[`${level}-${t.id}`];
+              const isCompleted = stats?.completed;
+              
               return (
                 <button 
                   key={t.id} 
-                  onClick={() => { setActiveTheme(t); resetSession(); setGameState('reading'); }} 
-                  className="bg-white p-6 rounded-[2.5rem] border-b-[8px] border-slate-300 hover:border-indigo-700 hover:-translate-y-2 transition-all text-left shadow-xl flex flex-col min-h-[240px] active:translate-y-0 active:border-b-0 group"
+                  onClick={() => { setActiveTheme(t); resetSession(); setGameState('reading'); }}
+                  className="group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 active:translate-y-0 focus:outline-none focus:ring-4 focus:ring-indigo-300 h-64"
                 >
-                  <div className={`w-12 h-12 ${t.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md`}>{t.icon}</div>
-                  <h3 className="text-lg font-black text-slate-900 leading-tight flex-grow break-words mb-4">
-                    {t.title}
-                  </h3>
-                  <div className="flex items-center justify-between pt-4 border-t-2 border-slate-100 mt-auto">
-                    {stats?.completed ? (
-                        <div className="flex items-center gap-2 text-emerald-700 font-black text-xs uppercase">
-                            <CheckCircle2 size={20} /> Ferdig
+                  {/* Top color bar */}
+                  <div className={`absolute top-0 left-0 right-0 h-1 ${t.color} bg-gradient-to-r from-transparent via-white to-transparent`}></div>
+                  
+                  {/* Hover background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-blue-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Content */}
+                  <div className="relative h-full flex flex-col p-6">
+                    <div className={`w-12 h-12 ${t.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-md`}>
+                      {t.icon}
+                    </div>
+                    
+                    <h3 className="text-lg font-black text-slate-900 leading-tight flex-grow mb-4 text-left">
+                      {t.title}
+                    </h3>
+                    
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                      {isCompleted ? (
+                        <div className="flex items-center gap-2 text-emerald-600 font-black text-xs uppercase">
+                          <CheckCircle2 size={18} className="group-hover:animate-bounce" /> Fullført
                         </div>
-                    ) : (
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">START</span>
-                    )}
-                    {stats?.score && <span className="text-sm font-black text-indigo-950 bg-indigo-100 px-2.5 py-0.5 rounded-xl border border-indigo-200">{stats.score}</span>}
+                      ) : (
+                        <span className="text-xs font-black text-indigo-600 uppercase tracking-widest">Start</span>
+                      )}
+                      {stats?.score && (
+                        <span className="text-sm font-black text-white bg-gradient-to-r from-indigo-600 to-blue-600 px-3 py-1 rounded-lg">
+                          {stats.score}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </button>
               );
@@ -646,21 +873,53 @@ export default function App() {
 
   if (gameState === 'reading') {
     return (
-      <div className="min-h-screen bg-[#f8fafc] p-6 flex flex-col items-center font-sans">
-        <div className="max-w-3xl w-full flex justify-between items-center mb-8">
-           <button onClick={() => setGameState('home')} className="flex items-center gap-2 text-slate-700 font-black text-base uppercase tracking-widest hover:text-indigo-800 transition-colors"><Home size={20}/> Dashbord</button>
-           <div className="bg-white px-6 py-2 rounded-full border-2 border-slate-300 text-xs font-black text-slate-700 tracking-[0.2em] uppercase shadow-md">Teoridel {level}</div>
-        </div>
-        <div className="max-w-3xl w-full bg-white rounded-[3rem] shadow-2xl overflow-hidden border-2 border-slate-200 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <div className={`p-12 ${activeTheme.color} flex flex-col items-center text-center`}>
-             <div className="p-6 bg-white rounded-[2rem] shadow-xl mb-6 transform -rotate-2 border-2 border-slate-100">{activeTheme.icon}</div>
-             <h2 className="text-4xl font-black text-slate-950 tracking-tighter leading-tight uppercase">{activeTheme.title}</h2>
-          </div>
-          <div className="p-12">
-            <div className="prose prose-lg text-slate-900 leading-relaxed mb-12 font-medium">
-              {activeTheme.text.split('. ').map((s, i) => <p key={i} className="mb-6 text-xl text-slate-800">{s}{s.endsWith('.') ? '' : '.'}</p>)}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-blue-50 p-4 sm:p-8 flex flex-col items-center justify-center font-sans">
+        <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center space-y-8">
+          {/* Navigation */}
+          <div className="w-full flex justify-between items-center">
+            <button 
+              onClick={() => setGameState('home')} 
+              className="inline-flex items-center gap-2 text-slate-600 font-bold text-sm uppercase tracking-widest hover:text-indigo-600 active:scale-90 transition-all px-4 py-2 rounded-lg hover:bg-white/50"
+            >
+              <Home size={20}/> Dashbord
+            </button>
+            <div className="bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full border border-white/20 text-xs font-black text-indigo-600 tracking-widest uppercase shadow-sm">
+              Teoridel {level}
             </div>
-            <button onClick={() => setGameState('playing')} className="w-full py-8 bg-indigo-800 text-white rounded-[2.5rem] font-black text-3xl hover:bg-indigo-900 shadow-xl flex items-center justify-center gap-6 transition-all active:scale-95 uppercase tracking-widest">Jeg er klar!</button>
+          </div>
+
+          {/* Content Card */}
+          <div className="w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/50 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            {/* Color header */}
+            <div className={`${activeTheme.color} p-8 sm:p-12 flex flex-col items-center text-center space-y-6`}>
+              <div className="p-6 bg-white rounded-2xl shadow-lg transform hover:scale-110 transition-transform duration-300 border-2 border-white/30">
+                {activeTheme.icon}
+              </div>
+              <h2 className="text-4xl sm:text-5xl font-black text-slate-950 tracking-tight leading-tight">
+                {activeTheme.title}
+              </h2>
+            </div>
+
+            {/* Text Content */}
+            <div className="p-8 sm:p-12 space-y-6">
+              <div className="prose prose-lg max-w-none space-y-6 text-slate-800 leading-relaxed font-medium">
+                {activeTheme.text.split('. ').map((s, i) => (
+                  <p key={i} className="text-lg leading-relaxed text-slate-700">
+                    {s}{s.endsWith('.') ? '' : '.'}
+                  </p>
+                ))}
+              </div>
+
+              {/* CTA Button */}
+              <div className="pt-8 flex justify-center">
+                <button 
+                  onClick={() => setGameState('playing')} 
+                  className="px-12 py-6 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-black text-2xl hover:from-indigo-700 hover:to-blue-700 shadow-lg hover:shadow-2xl transition-all active:scale-95 focus:outline-none focus:ring-4 focus:ring-indigo-300 uppercase tracking-wider flex items-center gap-3"
+                >
+                  <Play size={28} /> Jeg er klar!
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -669,58 +928,116 @@ export default function App() {
 
   if (gameState === 'playing') {
     const task = activeTheme.tasks[currentTaskIdx];
+    const progressPercent = ((currentTaskIdx) / activeTheme.tasks.length) * 100;
+    
     return (
-      <div className="min-h-screen bg-[#f8fafc] p-6 flex flex-col items-center font-sans">
-        <div className="max-w-3xl w-full flex items-center justify-between mb-8 px-4">
-           <div className="flex gap-3">
-             <button onClick={() => setGameState('home')} className="p-4 bg-white text-slate-800 border-2 border-slate-300 rounded-[1.2rem] hover:text-indigo-800 hover:shadow-xl transition-all active:scale-90 shadow-sm"><Home size={24}/></button>
-             <button onClick={() => setGameState('reading')} className="flex items-center gap-2 px-6 py-3 bg-white text-indigo-800 border-3 border-indigo-200 rounded-[1.2rem] hover:bg-indigo-50 font-black text-base uppercase tracking-widest shadow-md active:scale-95 transition-all"><Eye size={20}/> <span className="hidden sm:inline">Se tekst</span></button>
-           </div>
-           <div className="flex gap-2 bg-white p-3 rounded-[2rem] border-2 border-slate-200 shadow-md">
-            {[...Array(3)].map((_, i) => <Heart key={i} size={32} fill={i < lives ? "#ef4444" : "none"} className={i < lives ? "text-red-600" : "text-slate-200"} />)}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-blue-50 p-4 sm:p-8 flex flex-col items-center justify-center font-sans">
+        <div className="w-full max-w-4xl mx-auto flex flex-col space-y-6">
+          {/* Top Navigation Bar */}
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setGameState('home')} 
+                className="p-3 bg-white text-slate-700 border-2 border-slate-200 rounded-xl hover:text-indigo-600 hover:border-indigo-300 hover:shadow-lg transition-all active:scale-90 shadow-sm"
+              >
+                <Home size={24}/>
+              </button>
+              <button 
+                onClick={() => setGameState('reading')} 
+                className="hidden sm:flex items-center gap-2 px-6 py-3 bg-white text-indigo-600 border-2 border-indigo-200 rounded-xl hover:bg-indigo-50 font-black text-sm uppercase tracking-widest shadow-sm transition-all active:scale-95"
+              >
+                <Eye size={20}/> Tekst
+              </button>
+            </div>
+            
+            {/* Lives */}
+            <div className="flex gap-2 bg-white p-3 rounded-xl border-2 border-slate-200 shadow-sm">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="relative">
+                  <Heart 
+                    size={28} 
+                    className={i < lives ? "text-red-500" : "text-slate-300"} 
+                    fill={i < lives ? "#ef4444" : "none"}
+                  />
+                </div>
+              ))}
+            </div>
+            
+            {/* Score */}
+            <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-6 py-3 rounded-xl shadow-lg font-black text-lg">
+              {score}
+            </div>
           </div>
-          <div className="text-right bg-white px-6 py-2 rounded-[1.5rem] shadow-md border-2 border-slate-200 min-w-[100px]">
-             <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-1">Score</p>
-             <p className="text-3xl font-black text-indigo-900 leading-none">{score}</p>
+
+          {/* Progress Bar */}
+          <div className="w-full space-y-2">
+            <div className="flex justify-between items-center text-xs font-black text-slate-600 uppercase tracking-wider">
+              <span>Oppgave {currentTaskIdx + 1} av {activeTheme.tasks.length}</span>
+              <span>{Math.round(progressPercent)}%</span>
+            </div>
+            <div className="w-full bg-slate-200 h-3 rounded-full overflow-hidden shadow-inner border border-slate-300">
+              <div 
+                className="bg-gradient-to-r from-indigo-600 to-blue-600 h-full rounded-full transition-all duration-500 ease-out shadow-lg" 
+                style={{ width: `${progressPercent}%` }} 
+              />
+            </div>
           </div>
-        </div>
-        <div className="max-w-3xl w-full px-4">
-           <div className="w-full bg-slate-200 h-6 rounded-full overflow-hidden mb-10 p-1 shadow-inner border-2 border-slate-300">
-             <div className="bg-indigo-700 h-full rounded-full transition-all duration-1000 ease-out" style={{ width: `${((currentTaskIdx) / activeTheme.tasks.length) * 100}%` }} />
-           </div>
-           <div className="bg-white rounded-[3rem] p-10 shadow-xl relative border-2 border-slate-200 overflow-hidden min-h-[500px] flex flex-col">
-             {feedback && (
-               <div className={`absolute inset-0 z-40 flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 ${feedback === 'correct' ? 'bg-emerald-900' : 'bg-red-900'}`}>
-                 <div className="text-center text-white p-10 max-w-xl">
-                    {feedback === 'correct' ? (
-                        <div className="space-y-6">
-                            <div className="bg-white/20 w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl border-4 border-white/40">
-                                <Star size={100} fill="currentColor" className="text-yellow-400 animate-bounce" />
-                            </div>
-                            <h2 className="text-7xl font-black tracking-tighter uppercase text-white drop-shadow-lg">Riktig!</h2>
-                            <p className="text-3xl font-bold text-white opacity-100">+100 poeng</p>
-                            {streak > 1 && <div className="inline-block bg-white text-emerald-900 px-6 py-2 rounded-full text-xl font-black animate-pulse shadow-xl">🔥 {streak} STREAK!</div>}
+
+          {/* Main Task Card */}
+          <div className="bg-white rounded-3xl p-8 sm:p-12 shadow-2xl border border-white/50 relative overflow-hidden min-h-[600px] flex flex-col">
+            {/* Feedback Overlay */}
+            {feedback && (
+              <div className={`absolute inset-0 z-40 flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300 ${feedback === 'correct' ? 'bg-gradient-to-br from-emerald-900 to-emerald-800' : 'bg-gradient-to-br from-red-900 to-red-800'}`}>
+                <div className="text-center text-white p-8 max-w-xl space-y-6">
+                  {feedback === 'correct' ? (
+                    <>
+                      <div className="bg-white/20 w-40 h-40 rounded-full flex items-center justify-center mx-auto shadow-2xl border-4 border-white/40">
+                        <Star size={100} fill="currentColor" className="text-yellow-300 animate-bounce" />
+                      </div>
+                      <h2 className="text-6xl sm:text-7xl font-black tracking-tight drop-shadow-lg">Riktig!</h2>
+                      <p className="text-2xl font-bold opacity-95">+100 poeng</p>
+                      {streak > 1 && (
+                        <div className="inline-block bg-yellow-400 text-slate-900 px-8 py-3 rounded-full text-xl font-black animate-pulse shadow-xl">
+                          🔥 {streak} STREAK!
                         </div>
-                    ) : (
-                        <div className="space-y-6">
-                            <div className="bg-white/20 w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl border-4 border-white/40">
-                                <AlertTriangle size={100} className="text-white animate-pulse" />
-                            </div>
-                            <h2 className="text-7xl font-black tracking-tighter uppercase text-white drop-shadow-lg">Feil</h2>
-                            <p className="text-2xl font-bold text-white opacity-100 leading-tight">Sjekk fagteksten på nytt for å finne svaret!</p>
-                        </div>
-                    )}
-                    <button onClick={nextTask} className="mt-16 bg-white text-slate-950 px-20 py-6 rounded-[3rem] font-black text-3xl hover:scale-110 transition-transform shadow-2xl active:scale-95 border-b-[8px] border-slate-300 uppercase">Neste</button>
-                 </div>
-               </div>
-             )}
-             <div className="mb-10">
-               <span className="text-sm font-black text-indigo-600 uppercase block mb-3 tracking-[0.3em]">Oppgave {currentTaskIdx + 1} av {activeTheme.tasks.length}</span>
-               <h3 className="text-3xl font-black text-slate-950 leading-[1.2] tracking-tight">{task.q || 'Løs oppgaven'}</h3>
-             </div>
-             <div className="flex-grow">
-                <TaskRenderer task={task} onAnswer={handleAnswer} userInput={userInput} setUserInput={setUserInput} feedback={feedback} />
-             </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="bg-white/20 w-40 h-40 rounded-full flex items-center justify-center mx-auto shadow-2xl border-4 border-white/40">
+                        <AlertTriangle size={100} className="text-white animate-pulse" />
+                      </div>
+                      <h2 className="text-6xl sm:text-7xl font-black tracking-tight drop-shadow-lg">Feil</h2>
+                      <p className="text-xl font-semibold opacity-95">Prøv på nytt!</p>
+                    </>
+                  )}
+                  <button 
+                    onClick={nextTask} 
+                    className="mt-8 bg-white text-slate-950 px-12 py-4 rounded-xl font-black text-2xl hover:scale-105 transition-transform shadow-2xl active:scale-95 border-b-4 border-slate-300 uppercase tracking-wider"
+                  >
+                    Neste
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Question */}
+            <div className="mb-8 space-y-4">
+              <h3 className="text-3xl sm:text-4xl font-black text-slate-950 leading-tight">
+                {task.q || 'Løs oppgaven'}
+              </h3>
+            </div>
+
+            {/* Task Content */}
+            <div className="flex-grow">
+              <TaskRenderer 
+                task={task} 
+                onAnswer={handleAnswer} 
+                userInput={userInput} 
+                setUserInput={setUserInput} 
+                feedback={feedback} 
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -730,24 +1047,71 @@ export default function App() {
   if (gameState === 'summary' || gameState === 'gameover') {
     const isGameOver = gameState === 'gameover';
     return (
-      <div className={`min-h-screen ${isGameOver ? 'bg-slate-950' : 'bg-[#f1f5f9]'} flex items-center justify-center p-6 text-center transition-colors duration-1000 font-sans`}>
-        <div className="max-w-2xl w-full bg-white rounded-[4rem] p-16 shadow-2xl space-y-10 animate-in zoom-in duration-500 border-2 border-slate-200">
-          <div className={`w-32 h-32 ${isGameOver ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-600'} rounded-[2.5rem] flex items-center justify-center mx-auto shadow-inner border-2 border-white`}>
-            {isGameOver ? <AlertTriangle size={80}/> : <Trophy size={80} />}
-          </div>
-          <div>
-            <h2 className="text-6xl font-black text-slate-950 mb-4 tracking-tighter uppercase">{isGameOver ? 'Slutt' : 'Ferdig!'}</h2>
-            <p className="text-slate-600 font-bold text-xl leading-relaxed">
-              {isGameOver ? "Du gikk tom for liv. Prøv igjen!" : `Gratulerer! Temaet er fullført: ${activeTheme.title}`}
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-             <div className="bg-slate-100 p-8 rounded-[2.5rem] shadow-inner border-2 border-slate-200"><p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Poengsum</p><p className="text-4xl font-black text-indigo-900">{score}</p></div>
-             <div className="bg-slate-100 p-8 rounded-[2.5rem] shadow-inner border-2 border-slate-200"><p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">Liv igjen</p><p className="text-4xl font-black text-emerald-800">{lives}</p></div>
-          </div>
-          <div className="space-y-4 pt-6">
-            <button onClick={() => { resetSession(); setGameState('reading'); }} className={`w-full py-6 ${isGameOver ? 'bg-red-800 hover:bg-red-900 shadow-red-200' : 'bg-emerald-800 hover:bg-emerald-900 shadow-emerald-200'} text-white rounded-[2.5rem] font-black text-3xl shadow-2xl transition-all active:scale-95 border-b-[8px] border-black/20 uppercase`}>Prøv på nytt</button>
-            <button onClick={() => setGameState('home')} className="w-full py-5 bg-slate-200 text-slate-900 rounded-[2.5rem] font-black text-2xl flex items-center justify-center gap-6 hover:bg-slate-300 transition-all shadow-md active:scale-95 border-b-[6px] border-slate-400 uppercase tracking-widest"><Home size={32} /> Dashbord</button>
+      <div className={`min-h-screen flex items-center justify-center p-4 font-sans transition-colors duration-1000 ${isGameOver ? 'bg-gradient-to-br from-slate-900 via-red-900 to-slate-900' : 'bg-gradient-to-br from-slate-50 via-emerald-50 to-blue-50'}`}>
+        <div className="w-full max-w-2xl mx-auto">
+          <div className={`rounded-3xl p-12 sm:p-16 shadow-2xl space-y-8 animate-in zoom-in duration-500 border-2 ${isGameOver ? 'bg-slate-800 border-red-500/30' : 'bg-white border-white/50'}`}>
+            {/* Icon */}
+            <div className="flex justify-center">
+              <div className={`w-48 h-48 rounded-3xl flex items-center justify-center shadow-2xl border-4 ${isGameOver ? 'bg-red-100/20 border-red-500/50' : 'bg-emerald-100/50 border-emerald-300'}`}>
+                {isGameOver ? (
+                  <AlertTriangle size={120} className="text-red-400 animate-pulse"/>
+                ) : (
+                  <Trophy size={120} className="text-emerald-600"/>
+                )}
+              </div>
+            </div>
+
+            {/* Title & Message */}
+            <div className="text-center space-y-4">
+              <h2 className={`text-6xl sm:text-7xl font-black tracking-tight ${isGameOver ? 'text-red-400' : 'bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent'}`}>
+                {isGameOver ? 'Slutt' : 'Gratulerer!'}
+              </h2>
+              <p className={`text-lg sm:text-xl font-semibold leading-relaxed ${isGameOver ? 'text-slate-300' : 'text-slate-600'}`}>
+                {isGameOver 
+                  ? 'Du gikk tom for liv. Du klarte det bra - prøv på nytt!' 
+                  : `Flott jobbet! Du har fullført ${activeTheme.title}`
+                }
+              </p>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className={`p-8 rounded-2xl text-center border-2 ${isGameOver ? 'bg-slate-700 border-slate-600' : 'bg-gradient-to-br from-indigo-50 to-blue-50 border-indigo-200'}`}>
+                <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isGameOver ? 'text-slate-400' : 'text-indigo-600'}`}>
+                  Poengsum
+                </p>
+                <p className={`text-5xl font-black ${isGameOver ? 'text-slate-200' : 'text-indigo-900'}`}>
+                  {score}
+                </p>
+              </div>
+              <div className={`p-8 rounded-2xl text-center border-2 ${isGameOver ? 'bg-slate-700 border-slate-600' : 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200'}`}>
+                <p className={`text-xs font-black uppercase tracking-widest mb-2 ${isGameOver ? 'text-slate-400' : 'text-emerald-600'}`}>
+                  Liv igjen
+                </p>
+                <p className={`text-5xl font-black ${isGameOver ? 'text-slate-200' : 'text-emerald-900'}`}>
+                  {lives}
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="space-y-4 pt-6">
+              <button 
+                onClick={() => { resetSession(); setGameState('reading'); }}
+                className={`w-full py-6 rounded-2xl font-black text-xl uppercase tracking-wider transition-all active:scale-95 focus:outline-none focus:ring-4 ${isGameOver 
+                  ? 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 focus:ring-red-300 shadow-lg' 
+                  : 'bg-gradient-to-r from-emerald-600 to-emerald-700 text-white hover:from-emerald-700 hover:to-emerald-800 focus:ring-emerald-300 shadow-lg'
+                }`}
+              >
+                Prøv på nytt
+              </button>
+              <button 
+                onClick={() => setGameState('home')}
+                className="w-full py-5 bg-slate-200 text-slate-900 rounded-2xl font-black text-lg uppercase tracking-wider hover:bg-slate-300 transition-all shadow-md active:scale-95 focus:outline-none focus:ring-4 focus:ring-slate-300 flex items-center justify-center gap-3"
+              >
+                <Home size={24}/> Dashbord
+              </button>
+            </div>
           </div>
         </div>
       </div>
